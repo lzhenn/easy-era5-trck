@@ -8,7 +8,7 @@ Another version using WRF output to drive the model can be found [here](https://
 
 **Caution: Trajectory calculation is based on the nearest-neighbor interpolation and first-guess velocity for super efficiency. Accurate calculation algorithm can be found on http://journals.ametsoc.org/doi/abs/10.1175/BAMS-D-14-00110.1, or use a professional and complicated model e.g. [NOAA HYSPLIT](https://www.ready.noaa.gov/HYSPLIT.php) instead.**
 
-**Any question, please contact [Zhenning LI](zhenningli91@gmail.com)**
+**Any question, please contact Zhenning LI (zhenningli91@gmail.com)**
 
 ### Galleries
 
