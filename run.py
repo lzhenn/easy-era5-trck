@@ -15,59 +15,54 @@ import core.lagrange
 import os, time
 from multiprocessing import Pool, sharedctypes
 
-def lag_run_seriel(itsk, airp_lst, u4d, v4d, w4d, z4d, lat1d, lon1d, dts, inpf_per_dt, final_t):
+def lag_run_seriel(itsk, airp_lst, u4d, v4d, w4d, lat1d, lon1d, para_dic):
     """
-    Lagrangian run function for seriel
+    Lagrangian run function for seriel processor
     """
     
     start = time.time()
-    while(airp_lst[0].t[-1] < final_t): # not reach the final step
+    
+          
+    while(airp_lst[0].t[-1] != para_dic['final_t']): # not reach the final step
 
-        # ***Elemental Operation of Lagrangian Model***
+        # ----------***Elemental Operation of Lagrangian Model***-----------
+        
         # update global idt
-        idt=int(round((len(airp_lst[0].t)-1)/inpf_per_dt,0))         
+        idt=int(round((len(airp_lst[0].t)-1)/para_dic['inpf_per_dt'],0))         
         curr_t=airp_lst[0].t[-1].strftime('%Y-%m-%d %H:%M:%S')
     
         print('TASK[%02d]: Lagrangian Run at %s' % ( itsk, curr_t))
 
         for airp in airp_lst:
             # resolve ix iy iz for the last (T+0) move
-            core.lagrange.resolve_curr_xyz(airp, lat1d, lon1d, z4d[idt,:,:,:]) 
+            core.lagrange.resolve_curr_xyz(airp, lat1d, lon1d, para_dic['xz']) 
             
             idz=airp.iz[-1]
             idx=airp.ix[-1]
             idy=airp.iy[-1]
             # march all parcels (T+1)
-            core.lagrange.lagrange_march(airp, u4d[idt,idz,idx,idy], v4d[idt,idz,idx,idy], w4d[idt, idz,idx,idy], dts)
+            core.lagrange.lagrange_march(airp, u4d[idt,idz,idx,idy], v4d[idt,idz,idx,idy], w4d[idt, idz,idx,idy], para_dic['dts'])
 
     end = time.time()
     print('TASK[%02d] END: Lagrangian Run at %s, used %0.3f seconds' % (itsk, curr_t, (end - start)))
 
-def lag_run_mtsk(itsk, airp_lst, dts, inpf_per_dt, forward_flag, strt_t, final_t):
+def lag_run_mtsk(itsk, airp_lst, para_dic):
     """
     Lagrangian run function for multiple processors
     """
     
     start = time.time()
-    
-
-    u4d = np.ctypeslib.as_array(s_u4d)
-    v4d = np.ctypeslib.as_array(s_v4d)
-    w4d = np.ctypeslib.as_array(s_w4d)
     lat1d = np.ctypeslib.as_array(s_lat1d)
     lon1d = np.ctypeslib.as_array(s_lon1d)
 
-    if forward_flag ==1:
-        end_timestamp=final_t
-    else:
-        end_timestamp=strt_t
-    
-    while(airp_lst[0].t[-1] < final_t): # not reach the final step
-    
+    while(airp_lst[0].t[-1] != para_dic['final_t']): # not reach the final step
 
-        # ***Elemental Operation of Lagrangian Model***
+
+        # ----------***Elemental Operation of Lagrangian Model***-----------
+        
+        
         # update global idt
-        idt=int(round((len(airp_lst[0].t)-1)/inpf_per_dt,0))         
+        idt=int(round((len(airp_lst[0].t)-1)/para_dic['inpf_per_dt'],0))         
         curr_t=airp_lst[0].t[-1].strftime('%Y-%m-%d %H:%M:%S')
     
         print('TASK[%02d]: Lagrangian Run at %s' % ( itsk, curr_t))
@@ -75,11 +70,13 @@ def lag_run_mtsk(itsk, airp_lst, dts, inpf_per_dt, forward_flag, strt_t, final_t
 
         for airp in airp_lst:
             # resolve ix iy iz for the last (T+0) move
-            core.lagrange.resolve_curr_xyz(airp, lat1d, lon1d, z4d[idt,:,:,:]) 
+            core.lagrange.resolve_curr_xyz(airp, lat1d, lon1d, para_dic['xz']) 
             
             idz=airp.iz[-1]
             idx=airp.ix[-1]
             idy=airp.iy[-1]
+            print(idz)
+            exit()
             # march all parcels (T+1)
             core.lagrange.lagrange_march(airp, u4d[idt,idz,idx,idy], v4d[idt,idz,idx,idy], w4d[idt, idz,idx,idy], dts)
 
@@ -118,15 +115,21 @@ def main_run():
 
     airp_lst=[] # all traced air parcelis packed into a list
     for row in air_in_fhdl.itertuples():
-        airp_lst.append(lib.air_parcel.air_parcel(row.Index,row.lat0, row.lon0, row.h0, cfg_hdl, fields_hdl.strt_t))
+        airp_lst.append(lib.air_parcel.air_parcel(row.Index,row.lat0, row.lon0, row.h0, cfg_hdl, fields_hdl.strt_t, fields_hdl.forward))
 
     print('CORE Procedure: Lagrangian Tracing...')
 
     # ------Prepare inital parameters---
-    idt=0 # initial timeframe
+    
+    # init parameter dict
+    para_dic={
+            'inpf_per_dt': fields_hdl.drv_fld_dt, # calculate input file frq per integ dt
+            'dts':airp_lst[0].dt.total_seconds(), # dt in seconds
+            'strt_t':fields_hdl.strt_t,
+            'final_t': fields_hdl.final_t,
+            'xz': fields_hdl.xz.values
+            }
 
-    inpf_per_dt= fields_hdl.drv_fld_dt # calculate input file frq per integ dt
-    dts=airp_lst[0].dt.total_seconds() # dt in seconds
 
     ntasks=int(cfg_hdl['CORE']['ntasks'])
    
@@ -154,10 +157,10 @@ def main_run():
 
         # open tasks ID 0 to ntasks-2
         for itsk in range(ntasks-1):  
-            results.append(process_pool.apply_async(lag_run_mtsk,args=(itsk, airp_lst[itsk*len_per_task:(itsk+1)*len_per_task], dts, inpf_per_dt, fields_hdl.forward, fields_hdl.strt_t, fields_hdl.final_t,)))
+            results.append(process_pool.apply_async(lag_run_mtsk,args=(itsk, airp_lst[itsk*len_per_task:(itsk+1)*len_per_task], para_dic,)))
 
         # open ID ntasks-1 in case of residual
-        results.append(process_pool.apply_async(lag_run_mtsk, args=(ntasks-1, airp_lst[(ntasks-1)*len_per_task:], dts,inpf_per_dt, fields_hdl.final_t,)))
+        results.append(process_pool.apply_async(lag_run_mtsk, args=(ntasks-1, airp_lst[(ntasks-1)*len_per_task:], para_dic,)))
         
         print('Waiting for all subprocesses done...')
         
@@ -170,13 +173,11 @@ def main_run():
         print('All subprocesses done.')
             
     else:
-            
        u4d=fields_hdl.U.values
        v4d=fields_hdl.V.values
        w4d=fields_hdl.W.values
-       z4d=fields_hdl.Z.values
        
-       lag_run_seriel(0, airp_lst, u4d, v4d, w4d, z4d, fields_hdl.xlat.values, fields_hdl.xlon.values,  dts, inpf_per_dt, fields_hdl.final_t)
+       lag_run_seriel(0, airp_lst, u4d, v4d, w4d, fields_hdl.xlat.values, fields_hdl.xlon.values, para_dic)
            
            # end if <Muiltiple, Seriel>
 
