@@ -2,7 +2,7 @@
 
 Easy-ERA5-Trck is a super lightweight Lagrangian model for calculating thousands (even millions) of trajectories simultaneously and efficiently using ERA5 data sets. 
 It implements super simplified equations of 3-D motion to accelerate integration, and python multiprocessing is also involved to parallelize the model integration.
-Due to its simplification and parallelization, Easy-ERA5-Trck performs great speed in tracing massive air mass points, even in calculating millions of trajectories simultaneously.
+Due to its simplification and parallelization, Easy-ERA5-Trck performs great speed in tracing massive air parcels, even in calculating millions of trajectories simultaneously.
 
 Another version using WRF output to drive the model can be found [here](https://github.com/Novarizark/easy-wrf-trck). 
 
@@ -12,14 +12,8 @@ Another version using WRF output to drive the model can be found [here](https://
 
 ### Galleries
 
-#### Ocean Grid Cracker
-<img src="https://raw.githubusercontent.com/Novarizark/easy-wrf-trck/master/fig/oceangrid.bmp.gif" alt="oceangrid_emitter" align=center />
-
-#### Ocean-Sourced Mass Landfall Tracer
-<img src="https://github.com/Novarizark/easy-wrf-trck/raw/master/fig/halogen.d01.result.gif" alt="oceangrid_emitter" align=center />
-
-#### Mangkhut (1822) Firework 
-<img src="https://raw.githubusercontent.com/Novarizark/easy-wrf-trck/master/fig/mangkhut.d01.result.gif" alt="oceangrid_emitter" align=center />
+#### Tibetan Plateau Air Source Tracers
+<img src="https://raw.githubusercontent.com/Novarizark/easy-era5-trck/master/gallery/tp.source.result.gif" alt="tp_tracer" align=center />
 
 ### Input Files
 
