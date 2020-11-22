@@ -1,8 +1,8 @@
 # Easy-ERA5-Trck
 
 Easy-ERA5-Trck is a super lightweight Lagrangian model for calculating thousands (even millions) of trajectories simultaneously and efficiently using ERA5 data sets. 
-It implements super simplified equations of 3-D motion to accelerate integration, and python multiprocessing is also involved to parallelize the model integration.
-Due to its simplification and parallelization, Easy-ERA5-Trck performs great speed in tracing massive air parcels, even in calculating millions of trajectories simultaneously.
+It implements super simplified equations of 3-D motion to accelerate integration, and python multiprocessing to parallelize the integration tasks.
+Due to its simplification and parallelization, Easy-ERA5-Trck performs great speed in tracing massive air parcels, which makes **areawide** tracing possible.
 
 Another version using WRF output to drive the model can be found [here](https://github.com/Novarizark/easy-wrf-trck). 
 
