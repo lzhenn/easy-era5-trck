@@ -18,30 +18,33 @@ Another version using WRF output to drive the model can be found [here](https://
 ### Input Files
 
 #### input.csv
-`./input/input.csv`: This file prescribe the mass points for trajectory calculations. The style of this file:
+`./input/input.csv`: This file prescribe the air parcels for trajectory simulation. The format of this file:
 
 ```
-mass_id, init_lat, init_lon, init_h0 (m)
+airp_id, init_lat, init_lon, init_h0 (hPa)
 ```
 
-#### configure.ini
-`./conf/config.ini`: Configure file for the model. You may set WRF input file, input frequency, integration time steps, and other settings in this file.
+For forward trajectory, the init_{lat|lon|h0} denote initial positions; while for backward trajectory, they indicate ending positions.
+
+
+#### config.ini
+`./conf/config.ini`: Configure file for the model. You may set ERA5 input file, input frequency, integration time steps, and other settings in this file.
 
 
 ### Module Files
 
 #### run.py
-`./run.py`: Main script to run the Easy-WRF-Trck. 
+`./run.py`: Main script to run the Easy-ERA5-Trck. 
 
 #### lagrange.py
-`./core/lagrange.py`: Core module for calculating the mass points Lagrangian trajectories.
+`./core/lagrange.py`: Core module for calculating the air parcels Lagrangian trajectories.
 
 #### air_parcel.py
-`./lib/air_parcel.py`: Module file containing definition of air parcel class and related group functions.
+`./lib/air_parcel.py`: Module file containing definition of air parcel class and related methods such as march and output.
 
 #### cfgparser.py
 `./lib/cfgparser.py`: Module file containing read/write method of the `config.ini`
 
-#### preprocess_wrfinp.py
-`./lib/preprocess_wrfinp.py`: Module file that defines the field_hdl class, which contains useful fields data (U, V, W...) and related method, including wrfout IO operations.
+#### preprocess_era5inp.py
+`./lib/preprocess_era5inp.py`: Module file that defines the field_hdl class, which contains useful fields data (U, V, W...) and related method, including ERA5 grib file IO operations.
 
