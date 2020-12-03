@@ -1,8 +1,6 @@
 
 # Easy-ERA5-Trck
 
-[![pypi versions](https://img.shields.io/pypi/pyversions/celluloid.svg)](https://pypi.org/project/celluloid/)
-
 Easy-ERA5-Trck is a super lightweight Lagrangian model for calculating thousands (even millions) of trajectories simultaneously and efficiently using ERA5 data sets. 
 It implements super simplified equations of 3-D motion to accelerate integration, and python multiprocessing to parallelize the integration tasks.
 Due to its simplification and parallelization, Easy-ERA5-Trck performs great speed in tracing massive air parcels, which makes **areawide** tracing possible.
