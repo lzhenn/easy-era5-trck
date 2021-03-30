@@ -52,3 +52,25 @@ For forward trajectory, the init_{lat|lon|h0} denote initial positions; while fo
 #### preprocess_era5inp.py
 `./lib/preprocess_era5inp.py`: Module file that defines the field_hdl class, which contains useful fields data (U, V, W...) and related method, including ERA5 grib file IO operations.
 
+### Output Files
+
+You could choose output files as plain ascii csv format or netCDF format (Recommended). netCDF format output metadata looks like:
+``` bash
+netcdf meiyu.ynl.I19980610000000.E19980605000000 {
+dimensions:
+    time = 121 ;
+    parcel_id = 413 ;
+variables:
+    double xlat(time, parcel_id) ;
+        xlat:_FillValue = NaN ;
+    double xlon(time, parcel_id) ;
+        xlon:_FillValue = NaN ;
+    double xh(time, parcel_id) ;
+        xh:_FillValue = NaN ;
+    int64 time(time) ;
+        time:units = "hours since 1998-06-10 00:00:00" ;
+        time:calendar = "proleptic_gregorian" ;
+    int64 parcel_id(parcel_id) ;
+}
+```
+
