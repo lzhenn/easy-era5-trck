@@ -34,12 +34,13 @@ SMFONT=10
 FIG_WIDTH=10
 FIG_HEIGHT=9
 
-LON_W=-30
-LON_E=130
-LAT_S=-20
-LAT_N=90
+LON_W=40
+LON_E=120
+LAT_S=-10
+LAT_N=60
 
-traj_file='../output/test.P004703.I20150601000000.E20150527000000.nc'
+prefix='test'
+traj_file='../output/test.I20150531000000.E20150530000000.nc'
 
 
 #--------------Function Defination----------------
@@ -172,13 +173,13 @@ def main():
         #ax.set_ylim(cartopy_ylim(lsmask))
 
         ax.scatter( lon_arr.values[0,:], lat_arr[0,:],marker='.', color='darkred', 
-                    s=2, zorder=1, alpha=0.5, transform=ccrs.Geodetic())
+                    s=2, zorder=1, alpha=0.5, transform=ccrs.PlateCarree())
         ax.scatter( lon_arr.sel(time=itime).values, lat_arr.sel(time=itime).values,marker='.', color='blue', 
-                s=6, zorder=2, alpha=0.5, transform=ccrs.Geodetic())
+                s=6, zorder=2, alpha=0.5, transform=ccrs.PlateCarree())
      
         print('%04d finished.' % ii)
-        plt.title('TP Air Source Tracers %s' % itime.dt.strftime('%Y-%m-%d %H:%M:%S').values,fontsize=MIDFONT)
-        plt.savefig("../fig/tp.source.%04d.png" % ii, dpi=120, bbox_inches='tight')
+        plt.title('Air Source Tracers %s' % itime.dt.strftime('%Y-%m-%d %H:%M:%S').values,fontsize=MIDFONT)
+        plt.savefig('../fig/'+prefix+'.%04d.png' % ii, dpi=120, bbox_inches='tight')
         plt.close('all')
         ii=ii+1
 #plt.show()

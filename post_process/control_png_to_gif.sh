@@ -1,9 +1,9 @@
 #!/bin/bash
 
-PREFIX_ARR=( "tp.source." )
+PREFIX_ARR=( "test." )
 SUFFIX="png"
-STRT_F=48
-END_F=130
+STRT_F=0
+END_F=24
 FRAME_DT=10 # n/100 second
 
 N_FRM=$(( $END_F - $STRT_F ))

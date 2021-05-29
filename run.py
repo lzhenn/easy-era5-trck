@@ -52,6 +52,9 @@ def lag_run_mtsk(itsk, airp_lst, para_dic):
     """
     
     start = time.time()
+    u4d = np.ctypeslib.as_array(s_u4d)
+    v4d = np.ctypeslib.as_array(s_v4d)
+    w4d = np.ctypeslib.as_array(s_w4d)
     lat1d = np.ctypeslib.as_array(s_lat1d)
     lon1d = np.ctypeslib.as_array(s_lon1d)
 
@@ -67,7 +70,6 @@ def lag_run_mtsk(itsk, airp_lst, para_dic):
     
         print('TASK[%02d]: Lagrangian Run at %s' % ( itsk, curr_t))
 
-
         for airp in airp_lst:
             # resolve ix iy iz for the last (T+0) move
             core.lagrange.resolve_curr_xyz(airp, lat1d, lon1d, para_dic['xz']) 
@@ -75,10 +77,8 @@ def lag_run_mtsk(itsk, airp_lst, para_dic):
             idz=airp.iz[-1]
             idx=airp.ix[-1]
             idy=airp.iy[-1]
-            print(idz)
-            exit()
             # march all parcels (T+1)
-            core.lagrange.lagrange_march(airp, u4d[idt,idz,idx,idy], v4d[idt,idz,idx,idy], w4d[idt, idz,idx,idy], dts)
+            core.lagrange.lagrange_march(airp, u4d[idt,idz,idx,idy], v4d[idt,idz,idx,idy], w4d[idt, idz,idx,idy], para_dic['dts'])
 
     end = time.time()
     print('TASK[%02d] END: Lagrangian Run at %s, used %0.3f seconds' % (itsk, curr_t, (end - start)))
@@ -110,7 +110,7 @@ def main_run():
     fields_hdl=lib.preprocess_era5inp.era5_acc_fields(cfg_hdl)
    
     print('Construct Input Air Parecels...')
-    air_in_fhdl=pd.read_csv('./input/input.csv', names=['idx','lat0', 'lon0', 'h0'], index_col='idx')
+    air_in_fhdl=pd.read_csv('./input/input_tp.csv', names=['idx','lat0', 'lon0', 'h0'], index_col='idx')
 
 
     airp_lst=[] # all traced air parcelis packed into a list
@@ -182,7 +182,7 @@ def main_run():
            # end if <Muiltiple, Seriel>
 
     print('Output...')
-    lib.air_parcel.acc_output(airp_lst, 5000, cfg_hdl)
+    lib.air_parcel.acc_output(airp_lst, cfg_hdl)
 
 
 

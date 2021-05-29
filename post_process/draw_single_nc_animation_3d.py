@@ -22,7 +22,7 @@ MIDFONT=14
 SMFONT=10
 
 FIG_WIDTH=16
-FIG_HEIGHT=9
+FIG_HEIGHT=7
 
 LON_W=0
 LON_E=180
@@ -75,25 +75,26 @@ def main():
         # Set figure extent
         print(xlat.shape)
         print(xlon.shape)
-        ax.plot_surface(xlon,xlat,ps.sel(latitude=slice(LAT_N, LAT_S), longitude=slice(LON_W, LON_E))/100.0,color="lightgray",
-                               rstride=1,cstride=1, alpha=0.3,
-                               zorder=-99, linewidth=0, antialiased=False)
-                               
-            
-        ax.scatter( lon_arr.values[0,:], lat_arr[0,:], z_arr[0,:], marker='.', color='darkred', 
-                    s=2, zorder=1, alpha=1.)
+        ax.scatter( lon_arr.values[0,:], lat_arr[0,:], z_arr[0,:], marker='.', color='green', 
+                    s=2, alpha=0.3)
         ax.scatter( lon_arr.sel(time=itime).values, lat_arr.sel(time=itime).values,z_arr.sel(time=itime).values, marker='.', color='blue', 
-                s=6, zorder=2, alpha=1.)
+                s=6, alpha=1.)
+
+        ax.plot_surface(xlon,xlat,ps.sel(latitude=slice(LAT_N, LAT_S), longitude=slice(LON_W, LON_E))/100.0,color="lightgray",
+                               rstride=1,cstride=1, alpha=1.,
+                                linewidth=0, antialiased=False)
+            
         ax.set_facecolor('k')
         ax.set_zlim(1000, 100)
         ax.set_zscale('log')
         ax.set_xlim(LON_W,LON_E)
         ax.set_ylim(LAT_S,LAT_N)
-    #    ax.view_init(elev=30 - iframe,azim=-90)
-        ax.view_init(elev=0, azim=-90)
-        
+        ax.view_init(elev=53-0.05*ii, azim=-90)
+    #    ax.view_init(elev=0, azim=-90)
+        ax.grid(False)
 
         
+        plt.axis('off')
      
         plt.title('TP Air Source Tracers %s' % itime.dt.strftime('%Y-%m-%d %H:%M:%S').values,fontsize=MIDFONT)
         plt.savefig("../fig/tp.source.%04d.png" % ii, dpi=120, bbox_inches='tight')

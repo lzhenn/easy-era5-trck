@@ -2,7 +2,7 @@
 # Easy-ERA5-Trck
 
 Easy-ERA5-Trck is a super lightweight Lagrangian model for calculating thousands (even millions) of trajectories simultaneously and efficiently using ERA5 data sets. 
-It implements super simplified equations of 3-D motion to accelerate integration, and python multiprocessing to parallelize the integration tasks.
+It can implement super simplified equations of 3-D motion to accelerate integration, and use python multiprocessing to parallelize the integration tasks.
 Due to its simplification and parallelization, Easy-ERA5-Trck performs great speed in tracing massive air parcels, which makes **areawide** tracing possible.
 
 Another version using WRF output to drive the model can be found [here](https://github.com/Novarizark/easy-wrf-trck). 
@@ -18,6 +18,21 @@ Another version using WRF output to drive the model can be found [here](https://
 
 #### Tibetan Plateau Air Source Tracers (3D)
 <img src="https://github.com/Novarizark/easy-era5-trck/blob/master/gallery/tp.source.result.3d.gif?raw=true" alt="tp_tracer_3d" align=center />
+
+### Install
+
+If you wish to run easy-era5-trck using `grib2` data, Please first install [ecCodes](https://confluence.ecmwf.int/display/ECC/ecCodes+Home).
+
+Please instal python3 using Anaconda3 distribution. [Anaconda3](https://www.anaconda.com/products/individual) with python3.8 has been fully tested, lower version of python3 may also work (without testing).
+
+Now, we recommend to create a new environment in Anaconda and install the `requirements.txt`:
+
+```
+conda create -n test_era5trck python=3.8
+conda activate test_era5trck
+pip install -r requirements.txt
+```
+
 
 ### Input Files
 

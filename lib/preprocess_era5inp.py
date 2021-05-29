@@ -77,14 +77,14 @@ class era5_acc_fields:
             self.final_t=self.strt_t+datetime.timedelta(hours=self.forward*int(config['CORE']['integration_length']))
             nfiles=int(config['CORE']['integration_length'])//(int(config['INPUT']['input_file_dt'])//60)+1
             
-            self.ncfiles=[]
+            self.nc_pres_files=[]
             
             for ii in range(0,nfiles):
                 fn_timestamp=self.strt_t+datetime.timedelta(days=ii*self.forward)
                 print(fn_timestamp)
-                self.ncfiles.append(input_dir+'/'+fn_timestamp.strftime('%Y%m%d')+'-pl.grib')
-                ds_grib = [xr.open_dataset(p, engine='cfgrib', backend_kwargs={'errors': 'ignore'}) for p in self.ncfiles]
-
+                self.nc_pres_files.append(input_dir+'/'+fn_timestamp.strftime('%Y%m%d')+'-pl.grib')
+                ds_grib = [xr.open_dataset(p, engine='cfgrib', backend_kwargs={'errors': 'ignore'}) for p in self.nc_pres_files]
+               
             comb_ds=xr.concat(ds_grib, 'time')
             #from ns to s, time interval in driven file
             self.drv_fld_dt=((comb_ds.time[1].values-comb_ds.time[0].values)/np.timedelta64(1,'s')).tolist()
@@ -96,37 +96,17 @@ class era5_acc_fields:
             self.W = comb_ds['w'].loc[self.strt_t:self.final_t,:,:]
             self.xlat = comb_ds.latitude 
             self.xlon = comb_ds.longitude
-            self.xz = comb_ds.isobaricInhPa 
+            self.xz = comb_ds.isobaricInhPa
+            if config['CORE'].getboolean('boundary_check'):
+                self.nc_surf_files=[]
+                    
+                self.nc_surf_files.append(input_dir+'/'+fn_timestamp.strftime('%Y%m%d')+'-sl.grib')
+                ds_grib = [xr.open_dataset(p, engine='cfgrib', backend_kwargs={'errors': 'ignore'}) for p in self.nc_surf_files]
+
+            
             print(print_prefix+'init multi files successfully!')
         else:
-            print(print_prefix+'init from single input file...')
-            self.ncfiles=Dataset(config['INPUT']['input_era5'])
-            
-            print(print_prefix+'init from single input file for lat2d, lon2d, and hgt')
-            self.xlat = getvar(self.ncfiles, 'XLAT')
-            self.xlon = getvar(self.ncfiles, 'XLONG')
-            self.xh = getvar(self.ncfiles, 'HGT')
-            
-            self.strt_t=datetime.datetime.utcfromtimestamp(self.xlat.Time.values.tolist()/1e9)
-            self.final_t=self.strt_t+datetime.timedelta(hours=int(config['CORE']['integration_length']))
-            print(print_prefix+'Init T:%s, End T:%s' %(self.strt_t.strftime('%Y-%m-%d_%H:%M:%S'), self.final_t.strftime('%Y-%m-%d_%H:%M:%S')))
-            print(print_prefix+'init from single input file for Z4d')
-            var_tmp = getvar(self.ncfiles, 'z',timeidx=ALL_TIMES, method="cat")
-
-            print(print_prefix+'init from single input file for U4d')
-            var_tmp = getvar(self.ncfiles, 'ua',timeidx=ALL_TIMES, method="cat")
-            self.U=var_tmp
-            print(print_prefix+'init from single input file for V4d')
-            var_tmp = getvar(self.ncfiles, 'va',timeidx=ALL_TIMES, method="cat")
-            self.V=var_tmp
-            print(print_prefix+'init from single input file for W4d')
-            var_tmp = getvar(self.ncfiles, 'wa',timeidx=ALL_TIMES, method="cat")
-            self.W=var_tmp
-            del var_tmp
-            gc.collect()
-
-
-            print(print_prefix+'init multi files successfully!')
+            print(print_prefix+'init from single input file not supported now...')
 
 if __name__ == "__main__":
     pass

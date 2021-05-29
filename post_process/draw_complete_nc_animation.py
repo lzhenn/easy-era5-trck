@@ -40,8 +40,8 @@ LON_E=180
 LAT_S=-10
 LAT_N=70
 
-strt_time_str='2020061000'
-end_time_str='2020072000'
+strt_time_str='1998060500'
+end_time_str='1998063000'
 
 # The first initial time
 ini_date=datetime.datetime.strptime(strt_time_str,'%Y%m%d%H')
@@ -276,7 +276,7 @@ def main():
      
         print('%04d finished.' % ii)
         plt.title('Air Source Tracers %s' % itime.strftime('%Y-%m-%d %H:%M:%S'),fontsize=MIDFONT)
-        plt.savefig("../fig/air_source.%04d.png" % ii, dpi=90, bbox_inches='tight')
+        plt.savefig("../fig/meiyu.1998.%04d.png" % ii, dpi=90, bbox_inches='tight')
         plt.close('all')
         ii=ii+1
 #plt.show()

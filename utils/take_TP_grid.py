@@ -14,7 +14,7 @@ import csv
 
 if __name__ == "__main__":
     
-    init_height=600 # hpa
+    init_height=500 # hpa
     threshold_height=3000 # meter
     ds=xr.open_dataset('/disk/v092.yhuangci/lzhenn/elev.0.25-deg.nc')
     
