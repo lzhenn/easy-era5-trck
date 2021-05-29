@@ -33,6 +33,9 @@ conda activate test_era5trck
 pip install -r requirements.txt
 ```
 
+### Usage
+
+When you install the package ready. You may want to first try the test case.
 
 ### Input Files
 
@@ -88,4 +91,16 @@ variables:
     int64 parcel_id(parcel_id) ;
 }
 ```
+
+### Version iteration
+
+#### Oct 28, 2020
+* Fundimental pipeline design, multiprocessing, and I/O.
+* MVP v0.01
+
+#### May 31, 2021
+* Major Revision, logging module, and exception treatment
+* Document update
+* Utilities for driven data download
+* Basic version, v0.90
 

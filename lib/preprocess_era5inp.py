@@ -7,6 +7,8 @@ import numpy as np
 import xarray as xr
 import gc
 import os
+import lib.utils as utils
+
 
 print_prefix='lib.preprocess_era5inp>>'
 
@@ -66,7 +68,7 @@ class era5_acc_fields:
         """ construct input era5 file names """
         
         if config['INPUT'].getboolean('input_multi_files'):
-            print(print_prefix+'init multi files...')
+            utils.write_log(print_prefix+'init multi files...')
             
             input_dir, init_fn=os.path.split(config['INPUT']['input_era5'])
 
@@ -81,8 +83,9 @@ class era5_acc_fields:
             
             for ii in range(0,nfiles):
                 fn_timestamp=self.strt_t+datetime.timedelta(days=ii*self.forward)
-                print(fn_timestamp)
-                self.nc_pres_files.append(input_dir+'/'+fn_timestamp.strftime('%Y%m%d')+'-pl.grib')
+                file_name=fn_timestamp.strftime('%Y%m%d')+'-pl.grib'
+                utils.write_log(print_prefix+'Read file:'+file_name)
+                self.nc_pres_files.append(input_dir+'/'+file_name)
                 ds_grib = [xr.open_dataset(p, engine='cfgrib', backend_kwargs={'errors': 'ignore'}) for p in self.nc_pres_files]
                
             comb_ds=xr.concat(ds_grib, 'time')
@@ -104,9 +107,9 @@ class era5_acc_fields:
                 ds_grib = [xr.open_dataset(p, engine='cfgrib', backend_kwargs={'errors': 'ignore'}) for p in self.nc_surf_files]
 
             
-            print(print_prefix+'init multi files successfully!')
+            utils.write_log(print_prefix+'init multi files successfully!')
         else:
-            print(print_prefix+'init from single input file not supported now...')
+            utils.write_log(print_prefix+'init from single input file not supported now...')
 
 if __name__ == "__main__":
     pass
