@@ -38,7 +38,7 @@ def main_run():
     fields_hdl=lib.preprocess_era5inp.era5_acc_fields(cfg_hdl)
    
     utils.write_log('Construct Input Air Parecels...')
-    air_in_fhdl=pd.read_csv('./input/input_tp.csv', names=['idx','lat0', 'lon0', 'h0'], index_col='idx')
+    air_in_fhdl=pd.read_csv(cfg_hdl['INPUT']['input_parcel_file'], names=['idx','lat0', 'lon0', 'h0'], index_col='idx')
 
     airp_lst=[] # all traced air parcelis packed into a list
     for row in air_in_fhdl.itertuples():
