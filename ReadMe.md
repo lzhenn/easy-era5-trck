@@ -27,24 +27,69 @@ Please instal python3 using Anaconda3 distribution. [Anaconda3](https://www.anac
 
 Now, we recommend to create a new environment in Anaconda and install the `requirements.txt`:
 
-```
+```bash
 conda create -n test_era5trck python=3.8
 conda activate test_era5trck
 pip install -r requirements.txt
 ```
 
+If everything goes smoothly, first `cd` to the repo root path, and run `config.py`:
+
+```bash
+python3 config.py
+```
+
+This will convey fundamental configure parameters to `./conf/config_sys.ini`.
+
 ### Usage
 
-When you install the package ready. You may want to first try the test case.
+#### test case
+When you install the package ready. You may want to first try the test case. `config.ini` has been set for testcase, which is a very simple run 
 
-### Input Files
+#### setup your case
+Congratulation! After successfully run the toy case, of course, now you are eager to setup your own case. 
+First, build your own case directory, for example, in the repo root dir:
+```bash
+mkdir mycase
+```
+Now please make sure you have configured **[ECMWF CDS API](https://cds.climate.copernicus.eu/api-how-to)** correctly, both in your shell environment and python interface.
 
-#### input.csv
-`./input/input.csv`: This file prescribe the air parcels for trajectory simulation. The format of this file:
+Next, set `[DOWNLOAD]` section in `config.ini`  to fit your demanded period, levels, and region for downloading.
+
+```python
+[DOWNLOAD]
+store_path=./mycase/
+start_ymd = 20151220
+end_ymd = 20160101
+pres=[700, 750, 800, 850, 900, 925, 950, 975, 1000]
+
+# eara: [North, West, South, East]
+area=[-10, 0, -90, 360]
+# data frame frequency: recommend 1, 2, 3, 6. 
+# lower frequency will download faster but less accurate in tracing
+freq_hr=3
+```
+Here we hope to download 1000-700hPa data, from 20151220 to 20160101, 3-hr temporal frequency UVW data from ERA5 CDS.
+
+`./utlis/getERA5-UVW.py` will help you download the ERA5 reanalysis data for your case, in daily file with `freq_hr` temporal frequency.
+```bash
+cd utils
+python3 getERA5-UVW.py
+```
+
+When downloading the demanded data, you may want to determine the destinations or initial points of your targeted air parcels.
+`./input/input.csv`: This file is the default file prescribing the air parcels for trajectory simulation. The format of this file:
 
 ```
 airp_id, init_lat, init_lon, init_h0 (hPa)
 ```
+Alternatively, you can assign by `input_parcel_file` in `config.ini`.
+
+plese set other sections in `config.ini` accordingly.
+
+### Input Files
+
+#### input.csv
 
 For forward trajectory, the init_{lat|lon|h0} denote initial positions; while for backward trajectory, they indicate ending positions.
 
