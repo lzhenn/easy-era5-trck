@@ -9,14 +9,18 @@
 """
 import numpy as np
 import logging
+import lib.cfgparser
+import os
 
 DEG2RAD=np.pi/180.0
 
-def throw_error(source, msg):
+def throw_error(msg):
     '''
     throw error and exit
     '''
-    logging.error(source+msg)
+    logging.error(msg)
+    logging.error('Abnormal termination of Easy ERA5 Trac!')
+
     exit()
 
 def write_log(msg, lvl=20):
@@ -32,3 +36,10 @@ def write_log(msg, lvl=20):
     '''
 
     logging.log(lvl, msg)
+
+def get_root():
+    cfg=lib.cfgparser.read_cfg('../conf/config_sys.ini')
+    if not(os.path.exists(cfg['SYS']['root'])):
+        throw_error(cfg['SYS']['root']+' not found! Please check if config.py has been executed!')
+    
+    return cfg['SYS']['root']

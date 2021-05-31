@@ -1,8 +1,8 @@
 #/usr/bin/env python
 '''
-Date: Sep 2, 2020
+Date: May 30, 2021
 
-Take landsea mask from wrf output and construct input.csv by all ocean grid
+Take a rectanguler lat-lon box with specified size
 
 Zhenning LI
 
@@ -11,16 +11,39 @@ Zhenning LI
 import numpy as np
 import csv
 
-if __name__ == "__main__":
+#------set global attributes below------
+
+# rectanguler box
+start_lat, start_lon, end_lat, end_lon=-85, 180, -75, 240
+
+# rectanguler size
+len_we, len_sn=50, 50
+
+# destination/starting height
+aim_height=1000
+
+# set input.csv file name
+csv_fn='../input/input_ant_ice_melt.csv'
+
+#------set global attributes above------
+
+
+def main():
+
+    xlat1d=np.linspace(start_lat, end_lat, len_sn)
+    xlon1d=np.linspace(start_lon, end_lon, len_we)
     
-    init_height=100 
-    xlat1d=np.linspace(17.5,22.5,100)
-    xlon1d=np.linspace(115,120,100)
     igrid=0
-    with open('../input/input_GBA_d01.csv', 'w', newline='') as csvfile:
+    with open(csv_fn, 'w', newline='') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',')
         for ilat in xlat1d:
             for ilon in xlon1d:
-                spamwriter.writerow([igrid, ilat, ilon, init_height])
+                spamwriter.writerow([igrid, ilat, ilon, aim_height])
                 igrid=igrid+1
-        
+ 
+    print('Done! please check: '+csv_fn)
+
+if __name__ == "__main__":
+
+    main()
+       

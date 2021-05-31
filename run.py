@@ -15,7 +15,7 @@ Zhenning LI
 
 import numpy as np
 import pandas as pd
-import os, time
+import os, sys, time
 
 import  lib, core
 import lib.utils as utils
@@ -34,6 +34,10 @@ def main_run():
     utils.write_log('Read Config...')
     cfg_hdl=lib.cfgparser.read_cfg('./conf/config.ini')
     
+    if len(sys.argv)==2:
+        utils.write_log('Catch external start_ymdh='+sys.argv[1])
+        cfg_hdl['CORE']['start_ymdh']=sys.argv[1]
+
     utils.write_log('Init Fields...')
     fields_hdl=lib.preprocess_era5inp.era5_acc_fields(cfg_hdl)
    
@@ -49,7 +53,9 @@ def main_run():
     # ------Prepare inital parameters---
     # init parameter dict
     para_dic={
-            'inpf_per_dt': fields_hdl.drv_fld_dt, # calculate input file frq per integ dt
+            'step_per_inpf': fields_hdl.step_per_inpf, # calculate input file frq per integ dt
+            'inp_nfrm':fields_hdl.inp_nfrm,
+            'forward':fields_hdl.forward,
             'dts':airp_lst[0].dt.total_seconds(), # dt in seconds
             'strt_t':fields_hdl.strt_t,
             'final_t': fields_hdl.final_t,
@@ -104,6 +110,8 @@ def main_run():
     utils.write_log('Output...')
 
     lib.air_parcel.acc_output(airp_lst, cfg_hdl)
+    
+    utils.write_log('Easy ERA5 Track Completed Successfully!')
 
 
 def lag_run_seriel(itsk, airp_lst, u4d, v4d, w4d, lat1d, lon1d, para_dic):
@@ -113,13 +121,16 @@ def lag_run_seriel(itsk, airp_lst, u4d, v4d, w4d, lat1d, lon1d, para_dic):
     
     start = time.time()
     
-          
     while(airp_lst[0].t[-1] != para_dic['final_t']): # not reach the final step
 
         # ----------***Elemental Operation of Lagrangian Model***-----------
         
-        # update global idt
-        idt=int(round((len(airp_lst[0].t)-1)/para_dic['inpf_per_dt'],0))         
+        # update global idt (which frame of the data)
+        idt=int(round((len(airp_lst[0].t)-1)/para_dic['step_per_inpf'],0))         
+        
+        if para_dic['forward']==-1:
+            idt=para_dic['inp_nfrm']-idt-1
+
         curr_t=airp_lst[0].t[-1].strftime('%Y-%m-%d %H:%M:%S')
     
         utils.write_log('TASK[%02d]: Lagrangian Run at %s' % ( itsk, curr_t))
@@ -133,10 +144,13 @@ def lag_run_seriel(itsk, airp_lst, u4d, v4d, w4d, lat1d, lon1d, para_dic):
             idy=airp.iy[-1]
             # march all parcels (T+1)
             core.lagrange.lagrange_march(airp, u4d[idt,idz,idx,idy], v4d[idt,idz,idx,idy], w4d[idt, idz,idx,idy], para_dic['dts'])
+        
+        # ----------***Elemental Operation of Lagrangian Model***-----------
 
     curr_t=airp_lst[0].t[-1].strftime('%Y-%m-%d %H:%M:%S')
     end = time.time()
-    utils.write_log('TASK[%02d] END: Lagrangian Run at %s, used %0.3f seconds' % (itsk, curr_t, (end - start)))
+    
+    utils.write_log('TASK[%02d]: Lagrangian Run at %s, completed with %0.3f seconds elapsed.' % (itsk, curr_t, (end - start)))
 
 def lag_run_mtsk(itsk, airp_lst, para_dic):
     """
@@ -156,8 +170,12 @@ def lag_run_mtsk(itsk, airp_lst, para_dic):
         # ----------***Elemental Operation of Lagrangian Model***-----------
         
         
-        # update global idt
-        idt=int(round((len(airp_lst[0].t)-1)/para_dic['inpf_per_dt'],0))         
+        # update global idt (which frame of the data)
+        idt=int(round((len(airp_lst[0].t)-1)/para_dic['step_per_inpf'],0))         
+        
+        if para_dic['forward']==-1:
+            idt=para_dic['inp_nfrm']-idt-1
+
         curr_t=airp_lst[0].t[-1].strftime('%Y-%m-%d %H:%M:%S')
     
         utils.write_log('TASK[%02d]: Lagrangian Run at %s' % ( itsk, curr_t))
@@ -171,10 +189,11 @@ def lag_run_mtsk(itsk, airp_lst, para_dic):
             idy=airp.iy[-1]
             # march all parcels (T+1)
             core.lagrange.lagrange_march(airp, u4d[idt,idz,idx,idy], v4d[idt,idz,idx,idy], w4d[idt, idz,idx,idy], para_dic['dts'])
-
+        # ----------***Elemental Operation of Lagrangian Model***-----------
+    
     curr_t=airp_lst[0].t[-1].strftime('%Y-%m-%d %H:%M:%S')
     end = time.time()
-    utils.write_log('TASK[%02d] END: Lagrangian Run at %s, used %0.3f seconds' % (itsk, curr_t, (end - start)))
+    utils.write_log('TASK[%02d]: Lagrangian Run at %s, completed with %0.3f seconds elapsed.' % (itsk, curr_t, (end - start)))
     return airp_lst
 
 def create_share_type(np_array):

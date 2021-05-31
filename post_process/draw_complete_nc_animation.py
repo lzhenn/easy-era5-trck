@@ -35,13 +35,13 @@ SMFONT=10
 FIG_WIDTH=10
 FIG_HEIGHT=9
 
-LON_W=60
-LON_E=180
-LAT_S=-10
-LAT_N=70
+LON_W=10
+LON_E=350
+LAT_S=-90
+LAT_N=-10
 
-strt_time_str='1998060500'
-end_time_str='1998063000'
+strt_time_str='2015122500'
+end_time_str='2016012100'
 
 # The first initial time
 ini_date=datetime.datetime.strptime(strt_time_str,'%Y%m%d%H')
@@ -269,14 +269,14 @@ def main():
 
         # aim points
         ax.scatter( painter.aim_lon_set, painter.aim_lat_set, marker='.', color='darkred', 
-                    s=2, zorder=1, alpha=0.5, transform=ccrs.Geodetic())
+                    s=2, zorder=1, alpha=0.5, transform=ccrs.PlateCarree())
         
         ax.scatter( painter.firework_lon, painter.firework_lat, marker='.', color='blue', 
-                s=6, zorder=2, alpha=0.5, transform=ccrs.Geodetic())
+                s=6, zorder=2, alpha=0.5, transform=ccrs.PlateCarree())
      
         print('%04d finished.' % ii)
         plt.title('Air Source Tracers %s' % itime.strftime('%Y-%m-%d %H:%M:%S'),fontsize=MIDFONT)
-        plt.savefig("../fig/meiyu.1998.%04d.png" % ii, dpi=90, bbox_inches='tight')
+        plt.savefig("../fig/SP_Jan16.%04d.png" % ii, dpi=90, bbox_inches='tight')
         plt.close('all')
         ii=ii+1
 #plt.show()

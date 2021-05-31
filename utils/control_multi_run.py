@@ -1,46 +1,53 @@
 #/usr/bin/env python
 '''
-Date: Oct 28, 2020
+Date: May 30, 2021
 
-auto run for multiple initial times
+auto run for multiple start_ymdh 
+
+PLEASE FIRST SET OTHER PARAMETERS IN config.ini properly 
+before run this script, this script run multiple times
+by overwriting [CORE]['start_ymdh'] in config.ini
 
 Zhenning LI
 
 '''
+
 import sys, os
 import datetime
 sys.path.append('../')
-from lib.cfgparser import read_cfg, write_cfg
+import lib
+import lib.utils as utils
 
+#------set global attributes below------
+
+# The first [CORE]['start_ymdh'] in config.ini
+series_first_ymdh = '2015123100'
+
+# The last [CORE]['start_ymdh'] in config.ini
+series_last_ymdh = '2016010500'
+
+# interval hours between each 'start_ymdh'
+series_delta_hr = 24
+
+#------set global attributes above------
+
+#------EXCECUTION-------
 # The first initial time
-ini_date=datetime.datetime.strptime('1998061000','%Y%m%d%H')
+ini_date=datetime.datetime.strptime(series_first_ymdh,'%Y%m%d%H')
 
 # The final initial time
-final_date=datetime.datetime.strptime('1998063000','%Y%m%d%H')
+final_date=datetime.datetime.strptime(series_last_ymdh,'%Y%m%d%H')
 
 # Interval between each initial time
-ini_delta=datetime.timedelta(days=1)
+delta_hr=datetime.timedelta(hours=series_delta_hr)
 
-
-era5_prefix='/home/metctm1/array/data/era5/LYN-Meiyu/'
-era5_lst=[]
-while ini_date <= final_date:
-
-    yyyy=ini_date.strftime('%Y')
-    yyyymm=ini_date.strftime('%Y%m')
-    yyyymmddhh=ini_date.strftime('%Y%m%d%H')
-
-    era5_fn=ini_date.strftime('%Y%m%d')+'-pl.grib'
-    era5_lst.append(era5_prefix+'/'+era5_fn)
-    ini_date=ini_date+ini_delta
-for era5_fn in era5_lst:
-    cfg_hdl=read_cfg('../conf/config.ini')
-    cfg_hdl['INPUT']['input_era5']=era5_fn
-    print(era5_fn)
-    write_cfg(cfg_hdl,'../conf/config.ini')
-
+cfg_hdl=lib.cfgparser.read_cfg('../conf/config.ini')
+curr_date=ini_date
+while curr_date <= final_date:
+    print('>>>>>>>>>>>>>>Multi_Run @ '+curr_date.strftime('%Y%m%d%H')+'<<<<<<<<<<<<<<<<')
+    
     # execute run script
-    os.system('cd ..; python run.py; cd utils')
-
+    os.system('cd '+utils.get_root()+'; python3 run.py '+curr_date.strftime('%Y%m%d%H'))
+    curr_date=curr_date+delta_hr
 
 

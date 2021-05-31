@@ -4,6 +4,7 @@
 import configparser
 import datetime
 import numpy as np
+import pandas as pd
 import xarray as xr
 import gc
 import os
@@ -66,50 +67,72 @@ class era5_acc_fields:
     
     def __init__(self, config):
         """ construct input era5 file names """
+        fn_suffix='-pl.grib'
+        utils.write_log(print_prefix+' IO initiate...')
         
-        if config['INPUT'].getboolean('input_multi_files'):
-            utils.write_log(print_prefix+'init multi files...')
-            
-            input_dir, init_fn=os.path.split(config['INPUT']['input_era5'])
+        self.strt_t=datetime.datetime.strptime(config['CORE']['start_ymdh'], '%Y%m%d%H')
 
-            
+        self.forward=int(config['CORE']['forward_option'])
+        self.final_t=self.strt_t+datetime.timedelta(hours=self.forward*int(config['CORE']['integration_length']))
 
-            self.forward=int(config['CORE']['forward_option'])
-            self.strt_t=datetime.datetime.strptime(init_fn[:8],'%Y%m%d')
-            self.final_t=self.strt_t+datetime.timedelta(hours=self.forward*int(config['CORE']['integration_length']))
-            nfiles=int(config['CORE']['integration_length'])//(int(config['INPUT']['input_file_dt'])//60)+1
-            
-            self.nc_pres_files=[]
-            
-            for ii in range(0,nfiles):
-                fn_timestamp=self.strt_t+datetime.timedelta(days=ii*self.forward)
-                file_name=fn_timestamp.strftime('%Y%m%d')+'-pl.grib'
-                utils.write_log(print_prefix+'Read file:'+file_name)
-                self.nc_pres_files.append(input_dir+'/'+file_name)
-                ds_grib = [xr.open_dataset(p, engine='cfgrib', backend_kwargs={'errors': 'ignore'}) for p in self.nc_pres_files]
-               
-            comb_ds=xr.concat(ds_grib, 'time')
-            #from ns to s, time interval in driven file
-            self.drv_fld_dt=((comb_ds.time[1].values-comb_ds.time[0].values)/np.timedelta64(1,'s')).tolist()
-            #print(comb_ds.time.values.tolist().index(np.datetime64(self.strt_t.strftime('%Y-%m-%dT00:00:00'))))
-            #print(np.where(comb_ds.time.values==np.datetime64(self.strt_t.strftime('%Y-%m-%dT00:00:00'))))
-            
-            self.U = comb_ds['u'].loc[self.strt_t:self.final_t,:,:]
-            self.V = comb_ds['v'].loc[self.strt_t:self.final_t,:,:]
-            self.W = comb_ds['w'].loc[self.strt_t:self.final_t,:,:]
-            self.xlat = comb_ds.latitude 
-            self.xlon = comb_ds.longitude
-            self.xz = comb_ds.isobaricInhPa
-            if config['CORE'].getboolean('boundary_check'):
-                self.nc_surf_files=[]
-                    
-                self.nc_surf_files.append(input_dir+'/'+fn_timestamp.strftime('%Y%m%d')+'-sl.grib')
-                ds_grib = [xr.open_dataset(p, engine='cfgrib', backend_kwargs={'errors': 'ignore'}) for p in self.nc_surf_files]
 
+        input_dir=config['INPUT']['input_era5_case']
+        fn=input_dir+'/'+self.strt_t.strftime('%Y%m%d')+fn_suffix
+        self.nc_pres_files=[fn]
+        
+        # read the first file
+        utils.write_log(print_prefix+fn+' Reading...')
+        if not(os.path.exists(fn)):
+            utils.throw_error(print_prefix+'cannot locate:'+fn+', please check files or settings!')
+
+        ds_grib = [xr.load_dataset(fn, engine='cfgrib', backend_kwargs={'errors': 'ignore'})]
+        
+        # read following files
+        fn_dt=datetime.timedelta(days=1*self.forward) 
+        curr_t= self.strt_t
+        while curr_t.strftime('%Y%m%d') != self.final_t.strftime('%Y%m%d'):
+            curr_t=curr_t+fn_dt
+            fn=input_dir+'/'+curr_t.strftime('%Y%m%d')+fn_suffix
+            utils.write_log(print_prefix+fn+' Reading...')
             
-            utils.write_log(print_prefix+'init multi files successfully!')
-        else:
-            utils.write_log(print_prefix+'init from single input file not supported now...')
+            if not(os.path.exists(fn)):
+                utils.throw_error(print_prefix+'cannot locate:'+fn+', please check files or settings!')
+            self.nc_pres_files.append(fn) 
+            ds_grib.append(xr.load_dataset(fn, engine='cfgrib', backend_kwargs={'errors': 'ignore'}))
+         
+        if self.forward == -1:
+            utils.write_log(print_prefix+' prepare for BACKWARD integration...')
+            ds_grib=ds_grib[::-1]
+            slice_start=self.final_t
+            slice_end=self.strt_t
+
+        elif self.forward == 1:
+            utils.write_log(print_prefix+' prepare for FORWARD integration...')
+            slice_start=self.strt_t
+            slice_end=self.final_t
+
+        comb_ds=xr.concat(ds_grib, 'time')
+        # data frame interval in seconds
+        self.drv_fld_dt=((comb_ds.time[1].values-comb_ds.time[0].values)/np.timedelta64(1,'s')).tolist()
+        # how many time_steps in a data frame
+        self.step_per_inpf=self.drv_fld_dt/(int(config['CORE']['time_step'])*60)
+        self.U = comb_ds['u'].loc[slice_start:slice_end,:,:]
+        self.V = comb_ds['v'].loc[slice_start:slice_end,:,:]
+        self.W = comb_ds['w'].loc[slice_start:slice_end,:,:]
+        self.xlat = comb_ds.latitude 
+        self.xlon = comb_ds.longitude
+        self.xz = comb_ds.isobaricInhPa
+        
+        self.inp_nfrm=len(self.U.time)
+
+        if config['CORE'].getboolean('boundary_check'):
+            self.nc_surf_files=[]
+                
+            self.nc_surf_files.append(input_dir+'/'+fn_timestamp.strftime('%Y%m%d')+'-sl.grib')
+            ds_grib = [xr.open_dataset(p, engine='cfgrib', backend_kwargs={'errors': 'ignore'}) for p in self.nc_surf_files]
+
+        
+        utils.write_log(print_prefix+'init multi files successfully!')
 
 if __name__ == "__main__":
     pass
