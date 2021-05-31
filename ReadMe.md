@@ -176,16 +176,14 @@ Besides, `./utils/control_multi_run.py` will help you to run multiple seriels of
 
 ### Repository Structure
 
-#### conf
+#### run.py
+`./run.py`: Main script to run the Easy-ERA5-Trck. 
 
+
+#### conf
 * `./conf/config.ini`: Configure file for the model. You may set ERA5 input file, input frequency, integration time steps, and other settings in this file.
 * `./conf/config_sys.ini`: Configure file for the system, generate by run `config.py`. 
 * `./conf/logging_config.ini`: Configure file for logging module. 
-
-### Module Files
-
-#### run.py
-`./run.py`: Main script to run the Easy-ERA5-Trck. 
 
 #### core
 * `./core/lagrange.py`: Core module for calculating the air parcels Lagrangian trajectories.
@@ -197,11 +195,9 @@ Besides, `./utils/control_multi_run.py` will help you to run multiple seriels of
 * `./lib/utils.py`: utility functions for the model.
 
 #### post_process
-
 Some visualization scripts.
 
 #### utils
-
 Utils for downloading, generating `input.csv`, etc.
 
 ### Version iteration
