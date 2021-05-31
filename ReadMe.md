@@ -3,23 +3,11 @@
 
 - [Easy-ERA5-Trck](#easy-era5-trck)
     + [Galleries](#galleries)
-      - [Tibetan Plateau Air Source Tracers](#tibetan-plateau-air-source-tracers)
-      - [Tibetan Plateau Air Source Tracers (3D)](#tibetan-plateau-air-source-tracers--3d-)
     + [Install](#install)
     + [Usage](#usage)
-      - [test case](#test-case)
-      - [setup your case](#setup-your-case)
     + [Repository Structure](#repository-structure)
-      - [conf](#conf)
     + [Module Files](#module-files)
-      - [run.py](#runpy)
-      - [core](#core)
-      - [lib](#lib)
-      - [post_process](#post-process)
-      - [utils](#utils)
     + [Version iteration](#version-iteration)
-      - [Oct 28, 2020](#oct-28--2020)
-      - [May 31, 2021](#may-31--2021)
 
 Easy-ERA5-Trck is a super lightweight Lagrangian model for calculating thousands (even millions) of trajectories simultaneously and efficiently using ERA5 data sets. 
 It can implement super simplified equations of 3-D motion to accelerate integration, and use python multiprocessing to parallelize the integration tasks.
