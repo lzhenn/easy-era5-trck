@@ -119,6 +119,9 @@ class era5_acc_fields:
         self.U = comb_ds['u'].loc[slice_start:slice_end,:,:]
         self.V = comb_ds['v'].loc[slice_start:slice_end,:,:]
         self.W = comb_ds['w'].loc[slice_start:slice_end,:,:]
+        if np.any(np.isnan(self.U)) or np.any(np.isnan(self.V)) or np.any(np.isnan(self.W)):
+            utils.throw_error(print_prefix+'found NAN in combined data set, please check the download domains for all variables are identical.')
+
         self.xlat = comb_ds.latitude 
         self.xlon = comb_ds.longitude
         self.xz = comb_ds.isobaricInhPa
