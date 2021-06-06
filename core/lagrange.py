@@ -47,7 +47,25 @@ def lagrange_march(airp, u1d, v1d, w1d, dts):
     dz=w1d*dts/100 # to hPa
 
     curr_t = airp.t[-1]+airp.dt
+    lat_new, lon_new, height_new=bdy_check(airp.lat[-1]+dlat, airp.lon[-1]+dlon, airp.h[-1]+dz)
+    #lat_new, lon_new, height_new=airp.lat[-1]+dlat, airp.lon[-1]+dlon, airp.h[-1]+dz
+    
+    airp.update(lat_new, lon_new, height_new, curr_t)
 
-    airp.update(airp.lat[-1]+dlat, airp.lon[-1]+dlon, airp.h[-1]+dz, curr_t)
+def bdy_check(lat, lon, h):
+    '''
+    check boundary for lat, lon, h
+    '''
+    if lon>360:
+        lon=lon-360
+    if lon<0:
+        lon=360+lon
+    if lat>90:
+        lat=180-lat
+    if lat<-90:
+        lat=-(180+lat)
+   
+    return lat, lon, h
+
 if __name__ == "__main__":
     pass
