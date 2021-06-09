@@ -112,6 +112,24 @@ class era5_acc_fields:
             slice_end=self.final_t
 
         comb_ds=xr.concat(ds_grib, 'time')
+
+        #--- MOD by Junbin: Judging the longitude range
+        xlon = comb_ds.longitude
+        if np.nanmin(xlon) < 0.0:
+            lon_name = 'longitude'
+
+            # Adjust lon values to make sure they are within (0, 360)
+            comb_ds['longitude_adjusted'] = xr.where(comb_ds[lon_name] < 0, comb_ds[lon_name] + 360, comb_ds[lon_name])
+
+            # reassign the new coords to as the main lon coords and sort DataArray using new coordinate values
+            comb_ds = (
+                comb_ds
+                .swap_dims({lon_name: 'longitude_adjusted'})
+                .sel(**{'longitude_adjusted': sorted(comb_ds.longitude_adjusted)})
+                .drop(lon_name))
+            comb_ds = comb_ds.rename({'longitude_adjusted': lon_name})
+        #--- MOD END
+
         # data frame interval in seconds
         self.drv_fld_dt=((comb_ds.time[1].values-comb_ds.time[0].values)/np.timedelta64(1,'s')).tolist()
         # how many time_steps in a data frame
