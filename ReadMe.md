@@ -202,3 +202,6 @@ Utils for downloading, generating `input.csv`, etc.
 * Utility for taking grids in a box 
 * Basic functions done, v0.10
 
+#### Jun 09, 2021
+* The automatic detection of longitude range is added, allowing users to adopt two different ranges of longitude: [-180°, 180°] or [0°, 360°].
+* Currently, if you want to use the [-180°, 180°] data version, you can only set ntasks = 1 in the config.ini file.
