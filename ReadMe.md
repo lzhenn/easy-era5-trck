@@ -203,5 +203,5 @@ Utils for downloading, generating `input.csv`, etc.
 * Basic functions done, v0.10
 
 #### Jun 09, 2021
-* The automatic determination of the longitude distribution is added, allowing users to adopt two different ways of data files ([-180°, 180°] or [0°, 360°]).
-* But currently, if you want to use the [-180°, 180°] data version, you can only set ntasks = 1 in the config.ini file.
+* The automatic detection of longitude range is added, allowing users to adopt two different ranges of longitude: [-180°, 180°] or [0°, 360°].
+* Currently, if you want to use the [-180°, 180°] data version, you can only set ntasks = 1 in the config.ini file.
