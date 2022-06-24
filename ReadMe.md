@@ -205,3 +205,9 @@ Utils for downloading, generating `input.csv`, etc.
 #### Jun 09, 2021
 * The automatic detection of longitude range is added, allowing users to adopt two different ranges of longitude: [-180°, 180°] or [0°, 360°].
 * Currently, if you want to use the [-180°, 180°] data version, you can only set ntasks = 1 in the config.ini file.
+
+#### Oct 19, 2021
+* Modify `requirements.txt` to fit updated version of libs.
+
+#### Jun 24, 2022
+* Add Administrative Grid and sparse matrix match utils: `./utils/assign_nodes_to_city.py` and `./utils/assign_sparse_nodes.py`.

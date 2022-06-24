@@ -1,6 +1,6 @@
 [INPUT]
-input_era5_case = ./cases/east_china/ 
-input_parcel_file=./input/input_china_east_lv2_noname.csv
+input_era5_case = ./cases/ant_ice_melt
+input_parcel_file=./input/input_ant_ice_melt.csv
 
 [CORE]
 # timestep in min
@@ -9,31 +9,31 @@ precession = 1-order
 # 1 for forward, -1 for backward
 forward_option = -1
 # for forward, this is the initial time; otherwise, terminating time
-start_ymdh = 2020122700
+start_ymdh = 2016010300
 # integration length in hours
-integration_length = 120 
+integration_length = 24 
 # how many processors are willing to work for you
-ntasks = 8
+ntasks = 8 
 # not used yet
 boundary_check = False
 
 [OUTPUT]
 # output format, nc/csv, nc recommended for large-scale tracing
 out_fmt = nc
-out_prefix = east_china
+out_prefix = SP_Jan16
 # output frequency in min
 out_frq = 60
 # when out_fmt=csv, how many parcel tracks will be organized in a csv file.
 sep_num = 5000
 
 [DOWNLOAD]
-store_path=./cases/east_china/
-start_ymd = 20201225
-end_ymd = 20211231
-pres=[500, 600, 700, 750, 800, 850, 900, 925, 950, 975, 1000]
+store_path=./cases/polar_test/
+start_ymd = 20041229
+end_ymd = 20050103
+pres=[700, 750, 800, 850, 900, 925, 950, 975, 1000]
 
 # eara: [North, West, South, East]
-area=[60, 90, 0, 140]
+area=[-30, 0, -90, 360]
 
 # data frame frequency: recommend 1, 2, 3, 6. 
 # lower frequency will download faster but less accurate in tracing

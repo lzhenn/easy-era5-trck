@@ -21,10 +21,10 @@ import lib.utils as utils
 #------set global attributes below------
 
 # The first [CORE]['start_ymdh'] in config.ini
-series_first_ymdh = '2015123100'
+series_first_ymdh = '2021070100'
 
 # The last [CORE]['start_ymdh'] in config.ini
-series_last_ymdh = '2016010500'
+series_last_ymdh = '2021073100'
 
 # interval hours between each 'start_ymdh'
 series_delta_hr = 24

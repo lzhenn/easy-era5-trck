@@ -14,16 +14,16 @@ import csv
 #------set global attributes below------
 
 # rectanguler box
-start_lat, start_lon, end_lat, end_lon=-85, 180, -75, 240
+start_lat, start_lon, end_lat, end_lon=18, 95, 55, 135
 
 # rectanguler size
-len_we, len_sn=50, 50
+len_we, len_sn=161, 149 
 
 # destination/starting height
-aim_height=1000
+aim_height=950
 
 # set input.csv file name
-csv_fn='../input/input_ant_ice_melt.csv'
+csv_fn='../input/input_china_east_lv2.csv'
 
 #------set global attributes above------
 

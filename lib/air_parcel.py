@@ -65,6 +65,8 @@ class air_parcel:
         df=pd.DataFrame(out_data, index=self.t[::outfrq_per_dt])
         df.to_csv(out_fn)
 
+
+
 def acc_output(airp_lst, cfg):
     """ 
     output air parcel records according to configurations (accumulated)
