@@ -9,13 +9,13 @@
     + [Module Files](#module-files)
     + [Version iteration](#version-iteration)
 
+**Caution: Trajectory calculation is based on the nearest-neighbor interpolation and first-guess velocity for super efficiency. Accurate calculation algorithm can be found on http://journals.ametsoc.org/doi/abs/10.1175/BAMS-D-14-00110.1, or use a professional and complicated model e.g. [NOAA HYSPLIT](https://www.ready.noaa.gov/HYSPLIT.php) instead.**
+
 Easy-ERA5-Trck is a super lightweight Lagrangian model for calculating thousands (even millions) of trajectories simultaneously and efficiently using ERA5 data sets. 
 It can implement super simplified equations of 3-D motion to accelerate integration, and use python multiprocessing to parallelize the integration tasks.
 Due to its simplification and parallelization, Easy-ERA5-Trck performs great speed in tracing massive air parcels, which makes **areawide** tracing possible.
 
 Another version using WRF output to drive the model can be found [here](https://github.com/Novarizark/easy-wrf-trck). 
-
-**Caution: Trajectory calculation is based on the nearest-neighbor interpolation and first-guess velocity for super efficiency. Accurate calculation algorithm can be found on http://journals.ametsoc.org/doi/abs/10.1175/BAMS-D-14-00110.1, or use a professional and complicated model e.g. [NOAA HYSPLIT](https://www.ready.noaa.gov/HYSPLIT.php) instead.**
 
 **Any question, please contact Zhenning LI (zhenningli91@gmail.com)**
 
